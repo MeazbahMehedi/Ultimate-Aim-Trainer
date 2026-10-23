@@ -27,9 +27,11 @@ DIFFICULTY_GROWTH = {"Easy": 0.2, "Medium": 0.3, "Hard": 0.4}
 TARGET_EVENT = pygame.USEREVENT + 1
 
 
-def wait_for_first_click(ui_manager, surface):
+def wait_for_first_click(ui_manager):
+    """Show 'Click anywhere to begin!' and wait for the player to click."""
     clock = pygame.time.Clock()
     font = pygame.font.SysFont("arial", 32, bold=True)
+
     while True:
         clock.tick(FPS)
         for event in pygame.event.get():
@@ -38,53 +40,64 @@ def wait_for_first_click(ui_manager, surface):
             if event.type == pygame.MOUSEBUTTONDOWN:
                 return True
 
-        surface.fill((0, 0, 0))
-        ui_manager.draw_gradient_background(surface)
+        # Draw directly on the real window so the message is visible
+        ui_manager.draw_gradient_background(WIN)
         message = font.render("Click anywhere to begin!", True, TEXT_COLOR)
-        surface.blit(message, (WIDTH // 2 - message.get_width() // 2, HEIGHT // 2))
+        WIN.blit(message, (WIDTH // 2 - message.get_width() // 2, HEIGHT // 2))
+        ui_manager.draw_cursor(WIN, pygame.mouse.get_pos())
         pygame.display.update()
 
 
 def handle_events(ui_manager, targets, particles, hits, misses, score, multiplier,
-                  last_hit_time, clicks, start_time, combo, shake_timer):
+                  last_hit_time, clicks, combo, shake_timer):
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             return "quit", None
+
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
-                # Call the pause menu. If the user quits from pause, then exit.
                 result = ui_manager.pause_menu()
                 if result == "quit":
                     return "quit", None
-                # If "resume", then continue with event processing.
+                # "resume" → just continue
+
         if event.type == TARGET_EVENT:
             x = random.randint(TARGET_PADDING, WIDTH - TARGET_PADDING)
             y = random.randint(TARGET_PADDING + ui_manager.top_bar_height, HEIGHT - TARGET_PADDING)
             targets.append(Target(x, y, DIFFICULTY_GROWTH[ui_manager.current_difficulty]))
+
         if event.type == pygame.MOUSEBUTTONDOWN:
             clicks += 1
             mx, my = pygame.mouse.get_pos()
             clicked_any = False
+
             for target in targets[:]:
                 if target.collide(mx, my):
                     clicked_any = True
                     hits += 1
+
                     if time.time() - last_hit_time <= 0.5:
                         combo += 1
                         multiplier = max(multiplier, combo)
                     else:
                         combo = 1
+
                     score += multiplier
                     last_hit_time = time.time()
+
+                    # Spawn particles
                     for _ in range(min(20, 100 - len(particles))):
                         particles.add(Particle(target.x, target.y))
+
                     targets.remove(target)
                     break
+
             if not clicked_any:
                 misses += 1
                 multiplier = 1
                 combo = 0
                 shake_timer = 10
+
     return None, (hits, misses, score, multiplier, last_hit_time, clicks, combo, shake_timer)
 
 
@@ -94,6 +107,7 @@ def update_game(ui_manager, targets, particles, difficulty_multiplier, misses,
         target.update(difficulty_multiplier)
         if target.size <= 0:
             targets.remove(target)
+
     particles.update()
     ui_manager.draw_game_ui(game_surface, targets, particles, multiplier,
                             elapsed_time, score, hits, misses, mouse_pos, combo, MAX_LIVES)
@@ -101,14 +115,14 @@ def update_game(ui_manager, targets, particles, difficulty_multiplier, misses,
 
 
 def game_loop(ui_manager, difficulty="Medium", immediate=False):
-    ui_manager.current_difficulty = difficulty  # store current difficulty for later use
+    ui_manager.current_difficulty = difficulty
     targets = []
     particles = pygame.sprite.Group()
     game_surface = pygame.Surface((WIDTH, HEIGHT))
     clock = pygame.time.Clock()
 
     if not immediate:
-        if not wait_for_first_click(ui_manager, game_surface):
+        if not wait_for_first_click(ui_manager):
             return "quit", None
 
     hits, clicks, misses, score, multiplier, combo = 0, 0, 0, 0, 1, 0
@@ -123,6 +137,7 @@ def game_loop(ui_manager, difficulty="Medium", immediate=False):
         elapsed_time = time.time() - start_time
         mouse_pos = pygame.mouse.get_pos()
 
+        # End conditions
         if misses >= MAX_LIVES:
             action = ui_manager.end_screen(elapsed_time, hits, score, clicks, game_over=True)
             return ("restart", difficulty) if action == "restart" else ("quit", None)
@@ -131,17 +146,20 @@ def game_loop(ui_manager, difficulty="Medium", immediate=False):
             return ("restart", difficulty) if action == "restart" else ("quit", None)
 
         difficulty_multiplier = 1 + (elapsed_time / GAME_DURATION)
+
         action, updated = handle_events(ui_manager, targets, particles, hits, misses, score,
-                                        multiplier, last_hit_time, clicks, start_time,
-                                        combo, shake_timer)
+                                        multiplier, last_hit_time, clicks, combo, shake_timer)
         if action:
             return action, None
+
         (hits, misses, score, multiplier,
          last_hit_time, clicks, combo, shake_timer) = updated
 
         misses = update_game(ui_manager, targets, particles, difficulty_multiplier,
                              misses, game_surface, multiplier, elapsed_time, score,
                              hits, mouse_pos, combo)
+
+        # Screen shake on miss
         offset = (random.randint(-5, 5), random.randint(-5, 5)) if shake_timer > 0 else (0, 0)
         shake_timer = max(0, shake_timer - 1)
 
@@ -150,7 +168,8 @@ def game_loop(ui_manager, difficulty="Medium", immediate=False):
 
 
 def main():
-    ui_manager = UIManager(WIN, WIDTH, HEIGHT, BG_COLOR, TEXT_COLOR, BUTTON_COLOR, BUTTON_HOVER_COLOR, FPS)
+    ui_manager = UIManager(WIN, WIDTH, HEIGHT, BG_COLOR, TEXT_COLOR,
+                           BUTTON_COLOR, BUTTON_HOVER_COLOR, FPS)
     state = "main_menu"
     difficulty = "Medium"
     immediate_start = False
@@ -158,6 +177,7 @@ def main():
     while state != "quit":
         if state == "main_menu":
             state = ui_manager.main_menu()
+
         elif state == "options":
             state, selected = ui_manager.options_menu()
             if selected:
@@ -166,11 +186,13 @@ def main():
             else:
                 immediate_start = False
             state = "start"
+
         elif state == "start":
             state, new_diff = game_loop(ui_manager, difficulty, immediate=immediate_start)
             immediate_start = False
             if new_diff:
                 difficulty = new_diff
+
         elif state == "restart":
             state, new_diff = game_loop(ui_manager, difficulty, immediate=True)
             if new_diff:

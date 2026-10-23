@@ -2,6 +2,7 @@ import pygame
 import math
 from button import Button
 
+
 class UIManager:
     def __init__(self, window, width, height, bg_color, text_color, button_color, hover_color, fps):
         self.window = window
@@ -185,8 +186,10 @@ class UIManager:
         title_font = pygame.font.SysFont("arial", 48, bold=True)
         stats_font = pygame.font.SysFont("arial", 28)
 
+        # Added Restart button
         buttons = [
-            Button(self.width // 2 - 100, 420, 200, 50, "Quit", self.button_color, self.hover_color, self.text_color)
+            Button(self.width // 2 - 220, 450, 200, 50, "Restart", self.button_color, self.hover_color, self.text_color),
+            Button(self.width // 2 + 20, 450, 200, 50, "Quit", self.button_color, self.hover_color, self.text_color)
         ]
 
         clock = pygame.time.Clock()
@@ -229,7 +232,6 @@ class UIManager:
             pygame.display.update()
 
     def pause_menu(self):
-        # New pause menu with Resume and Quit options.
         title = self.title_font.render("Paused", True, self.text_color)
         resume_button = Button(self.width // 2 - 100, 250, 200, 50, "Resume", self.button_color, self.hover_color, self.text_color)
         quit_button = Button(self.width // 2 - 100, 320, 200, 50, "Quit", self.button_color, self.hover_color, self.text_color)
@@ -244,6 +246,7 @@ class UIManager:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     return "quit"
+
             for button in buttons:
                 button.update(mouse_pos)
                 if button.is_clicked(mouse_pos, mouse_pressed):

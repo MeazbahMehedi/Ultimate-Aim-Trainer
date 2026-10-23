@@ -27,7 +27,7 @@ Click shrinking targets, build combos, manage lives, and chase high scores acros
 
 ## Screenshots
 
-> Add your own screenshots here after running the game
+> screenshots here after running the game
 
 <img width="1279" height="751" alt="image" src="https://github.com/user-attachments/assets/a6d8d367-0cf3-4e6d-b5f7-7a7fa850916e" />
 

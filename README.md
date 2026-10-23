@@ -29,7 +29,14 @@ Click shrinking targets, build combos, manage lives, and chase high scores acros
 
 > Add your own screenshots here after running the game
 
-```
+<img width="1279" height="751" alt="image" src="https://github.com/user-attachments/assets/a6d8d367-0cf3-4e6d-b5f7-7a7fa850916e" />
+
+<img width="1283" height="745" alt="image" src="https://github.com/user-attachments/assets/e431f5ef-4fb6-482d-a3c9-26e3887d9a1f" />
+<img width="1279" height="747" alt="image" src="https://github.com/user-attachments/assets/1dc65cc7-abde-4ccf-9718-93789eb8b16e" />
+<img width="1275" height="747" alt="image" src="https://github.com/user-attachments/assets/7720abf4-a809-4054-847c-790fd8f3f46d" />
+<img width="1276" height="755" alt="image" src="https://github.com/user-attachments/assets/bfa9f8f7-7122-43cb-b784-9f0f8f4857e9" />
+
+
 [Main Menu]   [Gameplay]   [End Screen]
 ```
 

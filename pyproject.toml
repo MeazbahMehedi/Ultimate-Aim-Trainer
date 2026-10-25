@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ultimate-aim-trainer"
+version = "2.0.0"
+description = "Offline Python/Pygame aim training with five modes, local profiles and transparent statistics"
+requires-python = ">=3.11"
+dependencies = ["pygame-ce>=2.5,<3"]
+authors = [{name = "MD MEAZBAH MEHEDI PRODHAN"}]
+
+[project.scripts]
+aimtrainer = "aimtrainer.app:main"
+
+[tool.setuptools.packages.find]
+include = ["aimtrainer*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]

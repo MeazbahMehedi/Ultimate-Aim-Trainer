@@ -303,6 +303,10 @@ Run tests before publishing. Explain the actual version 2.0 behavior and measure
 
 ## Authorship and dependencies
 
-Original coursework: **MD MEAZBAH MEHEDI PRODHAN**, student ID **202380090135**, as supplied in the original submission. The v2.0 package preserves that work and documents its upgrade separately.
+This game was developed as part of the Object-Oriented Techniques in Python course at Zhengzhou University during the 2024–2025 academic year.
+
+Original Coursework Author: MD MEAZBAH MEHEDI PRODHAN
+
+The v2.0 package preserves the original coursework while documenting subsequent upgrades and improvements separately. This maintains the integrity of the original academic project while clearly distinguishing the enhanced version from the initial submission.
 
 Pygame Community Edition and Python retain their respective upstream licenses. No downloaded image pack, commercial font, music track or external AI service is bundled. Project-source licensing can be selected by the author when publishing the repository.
